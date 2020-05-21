@@ -7,4 +7,5 @@ public class GiteeUser {
     private Long id;
     private String name;
     private String bio;
+    private String avatarUrl;
 }

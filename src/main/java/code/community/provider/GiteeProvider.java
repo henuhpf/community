@@ -24,7 +24,6 @@ public class GiteeProvider {
         Request request = new Request.Builder().url(url).post(body).build();
         try (Response response = client.newCall(request).execute()) {
             String string = response.body().string();
-            System.out.println(string);
             HashMap hashMap = JSON.parseObject(string, HashMap.class);
             String access_token = (String) hashMap.get("access_token");
             return access_token;

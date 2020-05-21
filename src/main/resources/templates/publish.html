@@ -15,7 +15,7 @@
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">编码社区</span>
                 </button>
-                <a class="navbar-brand" href="#">编码社区</a>
+                <a class="navbar-brand" href="/">编码社区</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -44,7 +44,7 @@
     <div class="container-fluid main">
         <div class="row">
             <div class="col-lg-9 col-xs-12">
-                <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></h2>
+                <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发布</h2>
                 <hr>
                 <form action="/publish" method="post">
                     <div class="form-group">
@@ -60,7 +60,9 @@
                         <input type="text" class="form-control" id="tag" name="tag" th:value="${tag}" placeholder="输入标签，以，分隔">
                     </div>
                     <div class="container-fluid">
-                        <div class="alert alert-danger col-lg-9 col-xs-12" th:text="${error}" th:if="${error != null}"></div>
+                        <div class="col-lg-9 col-xs-12">
+                            <p class="alert alert-danger" th:text="${error}" th:if="${error != null}"></p>
+                        </div>
                         <div class="col-lg-3 col-xs-12">
                             <button type="submit" class="btn btn-success btn-publish">发布</button>
                         </div>
