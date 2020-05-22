@@ -31,7 +31,7 @@ public class AuthorizeController {
     private String redirectUri;
 
     @GetMapping("/callback")
-    public String callback(@RequestParam(name = "code") String code, HttpServletResponse response){
+    public String callback(@RequestParam(name = "code") String code, HttpServletResponse response, HttpServletRequest request){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -41,16 +41,24 @@ public class AuthorizeController {
         GiteeUser giteeUser = giteeProvider.getUserInfo(accessToken);
         if(giteeUser != null && giteeUser.getId() != null) {
             // 登录成功
-            User user = new User();
+            User user = userMapper.findByAccountId(String.valueOf(giteeUser.getId()));
             String token = UUID.randomUUID().toString();
-            user.setToken(token);
-            user.setName(giteeUser.getName());
-            user.setAccountId(String.valueOf(giteeUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
-            user.setAvatarUrl(giteeUser.getAvatarUrl());
-            userMapper.insert(user);
+            if(user != null){
+                user.setToken(token);
+                userMapper.updateById(user);
+            }else{
+                user = new User();
+                user.setToken(token);
+                user.setAccountId(String.valueOf(giteeUser.getId()));
+                user.setName(giteeUser.getName());
+                user.setAccountId(String.valueOf(giteeUser.getId()));
+                user.setGmtCreate(System.currentTimeMillis());
+                user.setGmtModified(user.getGmtCreate());
+                user.setAvatarUrl(giteeUser.getAvatarUrl());
+                userMapper.insert(user);
+            }
             response.addCookie(new Cookie("token", token));
+            request.getSession().setAttribute("user", user);
             return "redirect:/";
         }else {
             // 登录失败
