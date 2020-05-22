@@ -1,5 +1,6 @@
 package code.community.controller;
 
+import code.community.dto.PaginationDTO;
 import code.community.dto.QuestionDTO;
 import code.community.mapper.QuestionMapper;
 import code.community.mapper.UserMapper;
@@ -24,23 +25,25 @@ public class IndexController {
 	private QuestionService questionService;
 
 	@GetMapping("/")
-	public String index(HttpServletRequest request, Model model) {
+	public String index(HttpServletRequest request,
+						Model model,
+						@RequestParam(name = "page", defaultValue = "1") Integer page,
+						@RequestParam(name = "size", defaultValue = "2") Integer size) {
 		Cookie[] cookies = request.getCookies();
-		if(cookies == null || cookies.length == 0) {
-			return "index";
-		}
-		for (Cookie cookie : cookies) {
-			if(cookie.getName().equals("token")){
-				String token = cookie.getValue();
-				User user = userMapper.findByToken(token);
-				if (token != null) {
-					request.getSession().setAttribute("user", user);
+		if(cookies != null) {
+			for (Cookie cookie : cookies) {
+				if(cookie.getName().equals("token")){
+					String token = cookie.getValue();
+					User user = userMapper.findByToken(token);
+					if (token != null) {
+						request.getSession().setAttribute("user", user);
+					}
+					break;
 				}
-				break;
 			}
 		}
-		List<QuestionDTO> questionList = questionService.list();
-		model.addAttribute("questions", questionList);
+		PaginationDTO paginationDTO = questionService.list(page, size);
+		model.addAttribute("pagination", paginationDTO);
 		return "index";
 	}
 
