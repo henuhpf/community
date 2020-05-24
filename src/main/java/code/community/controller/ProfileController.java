@@ -19,10 +19,11 @@ import java.util.List;
 @Controller
 public class ProfileController {
     @Autowired
-    private UserMapper userMapper;
-    @Autowired
     private QuestionService questionService;
 
+    /**
+     * 个人中心
+     */
     @GetMapping("/profile/{action}")
     public String getProfile(@PathVariable(name = "action") String action,
                              HttpServletRequest request,

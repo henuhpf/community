@@ -23,14 +23,17 @@
                     </a>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading" th:text="${question.title}">测试</h4>
+                    <h4 class="media-heading">
+                        <a th:href="@{'/question/' + ${question.id}}" th:text="${question.title}"></a>
+                    </h4>
 
                     <small class="text-muted">
                         <span th:text="${question.user.name}"></span>  •
                         <span th:text="${question.likeCount}"></span> 人关注 •
                         <span th:text="${question.commentCount}"></span> 个回复 •
                         <span th:text="${question.viewCount}"></span> 次浏览 •
-                        <span th:text="${#dates.format(question.gmtCreate, 'yyyy/MM/dd HH:mm')}"></span></small>
+                        <span th:text="${#dates.format(question.gmtCreate, 'yyyy/MM/dd HH:mm')}"></span>
+                    </small>
                 </div>
             </div>
             <nav aria-label="Page navigation">

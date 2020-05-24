@@ -5,6 +5,7 @@ import code.community.dto.GiteeUser;
 import code.community.mapper.UserMapper;
 import code.community.model.User;
 import code.community.provider.GiteeProvider;
+import code.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ public class AuthorizeController {
     @Autowired
     private GiteeProvider giteeProvider;
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Value("${gitee.client.id}")
     private String clientId;
@@ -41,22 +42,17 @@ public class AuthorizeController {
         GiteeUser giteeUser = giteeProvider.getUserInfo(accessToken);
         if(giteeUser != null && giteeUser.getId() != null) {
             // 登录成功
-            User user = userMapper.findByAccountId(String.valueOf(giteeUser.getId()));
             String token = UUID.randomUUID().toString();
-            if(user != null){
-                user.setToken(token);
-                userMapper.updateById(user);
-            }else{
-                user = new User();
-                user.setToken(token);
-                user.setAccountId(String.valueOf(giteeUser.getId()));
-                user.setName(giteeUser.getName());
-                user.setAccountId(String.valueOf(giteeUser.getId()));
-                user.setGmtCreate(System.currentTimeMillis());
-                user.setGmtModified(user.getGmtCreate());
-                user.setAvatarUrl(giteeUser.getAvatarUrl());
-                userMapper.insert(user);
-            }
+            User user = new User();
+            user.setToken(token);
+            user.setAccountId(String.valueOf(giteeUser.getId()));
+            user.setName(giteeUser.getName());
+            user.setAccountId(String.valueOf(giteeUser.getId()));
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(giteeUser.getAvatarUrl());
+
+            userService.createOrUpdate(user);
             response.addCookie(new Cookie("token", token));
             request.getSession().setAttribute("user", user);
             return "redirect:/";
@@ -65,5 +61,15 @@ public class AuthorizeController {
             return "redirect:/";
         }
     }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie token = new Cookie("token", null);
+        token.setMaxAge(0);
+        token.setPath("/");
+        response.addCookie(token);
+        return "redirect:/";
+    }
+
 
 }
