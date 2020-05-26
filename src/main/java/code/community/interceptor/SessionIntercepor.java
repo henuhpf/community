@@ -29,6 +29,10 @@ public class SessionIntercepor implements HandlerInterceptor {
                 }
             }
         }
+        // 用户未登录，且访问首页
+        if("/".equals(request.getRequestURI())){
+            return true;
+        }
         return false;
     }
 }

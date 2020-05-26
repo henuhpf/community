@@ -2,6 +2,8 @@ package code.community.service;
 
 import code.community.dto.PaginationDTO;
 import code.community.dto.QuestionDTO;
+import code.community.exception.CustomizeErrorCode;
+import code.community.exception.CustomizeException;
 import code.community.mapper.QuestionMapper;
 import code.community.mapper.UserMapper;
 import code.community.model.Question;
@@ -59,6 +61,9 @@ public class QuestionService {
 
     public QuestionDTO getById(Integer id) {
         Question question = questionMapper.findById(id);
+        if(question == null){
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+        }
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question, questionDTO);
         User user = userMapper.findById(question.getCreator());
